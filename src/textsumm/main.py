@@ -4,9 +4,12 @@ from rich.table import Table
 from collections import Counter
 import re
 from typing import TypedDict
+import structlog
+
 
 app = typer.Typer()
 console = Console()
+log=structlog.get_logger()
 
 class AnalysisResult(TypedDict):
     word_count: int
@@ -32,14 +35,18 @@ def analyze(text: str) -> AnalysisResult:
 
 @app.command()
 def summarize(filepath: str) -> None:
+    log.info("starting analysis", filepath=filepath)
     try:
         with open(filepath, "r") as f:
             text = f.read()
+        log.info("file read successfully",filepath=filepath)
     except FileNotFoundError:
+        log.error("file not found",filepath=filepath)
         console.print(f"[red]File not found: {filepath}[/red]")
         raise typer.Exit(1)
 
     stats = analyze(text)
+    log.info("analysis complete", word_count=stats["word_count"])
 
     table = Table(title="Text Summary")
     table.add_column("Metric", style="cyan")
