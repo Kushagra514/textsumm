@@ -10,6 +10,8 @@ Get word count, sentence count, average sentence length, and the top 5 most freq
 - Average sentence length
 - Top 5 most frequent words
 - Clean rich table output in your terminal
+- Structured logging for every operation
+- Meaningful error messages for empty files and wrong file types
 
 ## Installation
 ```bash
@@ -28,7 +30,11 @@ textsumm report.txt
 
 ### Output
 ```
-        Text Summary         
+2026-03-15 11:44:22 [info] starting analysis filepath=report.txt
+2026-03-15 11:44:22 [info] file read successfully filepath=report.txt
+2026-03-15 11:44:22 [info] analysis complete word_count=120
+
+               Text Summary
 ┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
 ┃ Metric              ┃ Value             ┃
 ┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
@@ -41,6 +47,21 @@ textsumm report.txt
 │ Top word #4         │ intelligence (3x) │
 │ Top word #5         │ and (3x)          │
 └─────────────────────┴───────────────────┘
+```
+
+## Error Handling
+```bash
+# Empty file
+textsumm empty.txt
+Error: empty.txt is empty
+
+# Wrong file type
+textsumm document.pdf
+Error: only .txt files are supported
+
+# File not found
+textsumm missing.txt
+File not found: missing.txt
 ```
 
 ## Development Setup
@@ -73,13 +94,18 @@ poetry run black src/
 poetry run ruff check src/
 ```
 
+Type check:
+```bash
+poetry run mypy src/ --strict
+```
+
 ## Project Structure
 ```
 textsumm/
 ├── src/
 │   └── textsumm/
 │       ├── __init__.py
-│       └── main.py        # CLI entry point and core logic
+│       └── main.py        # CLI entry point, core logic, custom exceptions
 ├── tests/
 │   ├── __init__.py
 │   └── test_main.py       # pytest test suite (97% coverage)
@@ -94,6 +120,7 @@ textsumm/
 |---------|---------|
 | typer | CLI framework |
 | rich | Terminal formatting |
+| structlog | Structured logging |
 
 ## License
 
