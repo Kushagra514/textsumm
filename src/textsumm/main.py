@@ -3,12 +3,18 @@ from rich.console import Console
 from rich.table import Table
 from collections import Counter
 import re
+from typing import TypedDict
 
 app = typer.Typer()
 console = Console()
 
+class AnalysisResult(TypedDict):
+    word_count: int
+    sentence_count: int
+    avg_sentence_length: int
+    top_words: list[tuple[str, int]]
 
-def analyze(text: str) -> dict:
+def analyze(text: str) -> AnalysisResult:
     words = re.findall(r"\b\w+\b", text.lower())
     sentences = re.split(r"[.!?]+", text)
     sentences = [s.strip() for s in sentences if s.strip()]
@@ -25,7 +31,7 @@ def analyze(text: str) -> dict:
 
 
 @app.command()
-def summarize(filepath: str):
+def summarize(filepath: str) -> None:
     try:
         with open(filepath, "r") as f:
             text = f.read()
