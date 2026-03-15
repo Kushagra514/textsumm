@@ -35,10 +35,10 @@ def test_empty_file():
     assert result["word_count"] == 0
     assert result["avg_sentence_length"] == 0
 
-def test_summarize_reads_file(tmp_path):
-    f = tmp_path / "test.txt"
-    f.write_text("Hello world. Foo bar. Baz.")
-    summarize(str(f))
+def test_summarize_reads_file():
+    mock_content = "Hello world. Foo bar. Baz."
+    with patch("builtins.open",mock_open(read_data=mock_content)):
+        summarize("fake_file.txt")
 
 def test_summarize_file_not_found():
     with pytest.raises(Exception):
