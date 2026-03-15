@@ -3,21 +3,32 @@ from unittest.mock import mock_open, patch
 import pytest
 import typer
 
-def test_word_count():
-    result = analyze("hello world foo")
-    assert result["word_count"] == 3
 
-def test_sentence_count():
-    result = analyze("Hello world. Foo bar. Baz.")
+@pytest.fixture
+def sample_text():
+    return "Artificial intelligence is transforming the world. Machine learning models are being deployed everywhere. These systems can analyze vast amounts of data."
+
+def test_word_count(sample_text):
+    result = analyze(sample_text)
+    assert result["word_count"] == 21
+
+def test_sentence_count(sample_text):
+    result = analyze(sample_text)
     assert result["sentence_count"] == 3
 
-def test_avg_sentence_length():
-    result = analyze("Hello world. Foo bar baz.")
-    assert result["avg_sentence_length"] == 2
+def test_avg_sentence_length(sample_text):
+    result = analyze(sample_text)
+    assert result["avg_sentence_length"] == 7
 
-def test_top_words():
-    result = analyze("the the the cat cat dog")
-    assert result["top_words"][0] == ("the", 3)
+
+@pytest.mark.parametrize("text,expected_top_word", [
+    ("the the the cat cat dog", ("the",3)),
+    ("dog dog cat",("dog",2)),
+    ("hello hello hello world",("hello",3)),
+])
+def test_top_words(text,expected_top_word):
+    result = analyze(text)
+    assert result["top_words"][0] == expected_top_word
 
 def test_empty_file():
     result = analyze("")
