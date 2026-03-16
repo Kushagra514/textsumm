@@ -1,11 +1,10 @@
-import typer
 from rich.console import Console
 from rich.table import Table
 from collections import Counter
 import re
 from typing import TypedDict
 import structlog
-
+import typer
 
 app = typer.Typer()
 console = Console()
@@ -35,6 +34,7 @@ class AnalysisResult(TypedDict):
     sentence_count: int
     avg_sentence_length: int
     top_words: list[tuple[str, int]]
+    density: float
 
 
 def analyze(text: str) -> AnalysisResult:
@@ -45,11 +45,13 @@ def analyze(text: str) -> AnalysisResult:
     sentence_count = len(sentences)
     avg_length = round(word_count / sentence_count) if sentence_count else 0
     top_words = Counter(words).most_common(5)
+    density = (round((len(set(words)) / len(words)) * 100, 1)) if words else 0
     return {
         "word_count": word_count,
         "sentence_count": sentence_count,
         "avg_sentence_length": avg_length,
         "top_words": top_words,
+        "density": density,
     }
 
 
@@ -88,6 +90,7 @@ def summarize(filepath: str) -> None:
     table.add_row("Words", str(stats["word_count"]))
     table.add_row("Sentences", str(stats["sentence_count"]))
     table.add_row("Avg sentence length", str(stats["avg_sentence_length"]) + " words")
+    table.add_row("Word Density", str(stats["density"]) + "%")
     for i, (word, count) in enumerate(stats["top_words"]):
         table.add_row(f"Top word #{i+1}", f"{word} ({count}x)")
 
