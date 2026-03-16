@@ -9,25 +9,33 @@ import structlog
 
 app = typer.Typer()
 console = Console()
-log=structlog.get_logger()
+log = structlog.get_logger()
+
 
 class TextSummError(Exception):
-    """ Base exception for textsumm errors."""
+    """Base exception for textsumm errors."""
+
     pass
+
 
 class EmptyFileError(TextSummError):
     """Raised when the file exists but contains no text."""
+
     pass
+
 
 class InvalidFileTypeError(TextSummError):
     """Raised when the file is not a text file."""
+
     pass
+
 
 class AnalysisResult(TypedDict):
     word_count: int
     sentence_count: int
     avg_sentence_length: int
     top_words: list[tuple[str, int]]
+
 
 def analyze(text: str) -> AnalysisResult:
     words = re.findall(r"\b\w+\b", text.lower())
@@ -53,22 +61,22 @@ def summarize(filepath: str) -> None:
             raise InvalidFileTypeError(f"{filepath} is not a .txt file")
         with open(filepath, "r") as f:
             text = f.read()
-        log.info("file read successfully",filepath=filepath)
+        log.info("file read successfully", filepath=filepath)
 
         if not text.strip():
             raise EmptyFileError(f"{filepath} is empty")
 
     except FileNotFoundError:
-        log.error("file not found",filepath=filepath)
+        log.error("file not found", filepath=filepath)
         console.print(f"[red]File not found: {filepath}[/red]")
         raise typer.Exit(1)
     except EmptyFileError:
-        log.error("empty file",filepath=filepath)
+        log.error("empty file", filepath=filepath)
         console.print(f"[red]File not found: {filepath} is empty[/red]")
         raise typer.Exit(1)
     except InvalidFileTypeError:
-        log.error("invalid file type",filepath=filepath)
-        console.print(f"[red]Error: only .txt files are supported[/red]")
+        log.error("invalid file type", filepath=filepath)
+        console.print("[red]Error: only .txt files are supported[/red]")
         raise typer.Exit(1)
 
     stats = analyze(text)
@@ -86,5 +94,7 @@ def summarize(filepath: str) -> None:
     console.print(table)
 
 
+x = 1 + 2
+y = 3
 if __name__ == "__main__":
     app()
