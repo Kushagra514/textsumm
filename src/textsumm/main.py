@@ -94,7 +94,5 @@ def summarize(filepath: str) -> None:
     console.print(table)
 
 
-x = 1 + 2
-y = 3
 if __name__ == "__main__":
     app()
