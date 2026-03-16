@@ -14,4 +14,4 @@ repos:
     hooks:
       - id: mypy
         args: [--strict]
-        additional_dependencies: [typer, rich, structlog]
+        additional_dependencies: [typer, rich, structlog, pytest]
