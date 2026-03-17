@@ -1,13 +1,16 @@
 # textsumm
 
+![CI](https://github.com/Kushagra514/textsumm/actions/workflows/ci.yml/badge.svg)
+
 A fast, lightweight CLI tool that summarizes any text file in seconds.
-Get word count, sentence count, average sentence length, and the top 5 most frequent words — all in a clean formatted table.
+Get word count, sentence count, average sentence length, word density, and the top 5 most frequent words — all in a clean formatted table.
 
 ## Features
 
 - Word count
 - Sentence count
 - Average sentence length
+- Word density (vocabulary variety as a percentage)
 - Top 5 most frequent words
 - Clean rich table output in your terminal
 - Structured logging for every operation
@@ -41,6 +44,7 @@ textsumm report.txt
 │ Words               │ 120               │
 │ Sentences           │ 10                │
 │ Avg sentence length │ 12 words          │
+│ Word density        │ 79.2%             │
 │ Top word #1         │ are (7x)          │
 │ Top word #2         │ the (6x)          │
 │ Top word #3         │ that (4x)         │
@@ -73,14 +77,17 @@ cd textsumm
 poetry install
 ```
 
-Run the tool locally:
+Run all checks at once:
 ```bash
-poetry run textsumm path/to/file.txt
+make check
 ```
 
-Run tests:
+Or individually:
 ```bash
-poetry run pytest tests/ -v
+make test       # run pytest
+make lint       # run ruff
+make format     # run black
+make typecheck  # run mypy --strict
 ```
 
 Run tests with coverage:
@@ -88,29 +95,24 @@ Run tests with coverage:
 poetry run pytest tests/ --cov=src/textsumm --cov-report=term-missing
 ```
 
-Format and lint:
-```bash
-poetry run black src/
-poetry run ruff check src/
-```
-
-Type check:
-```bash
-poetry run mypy src/ --strict
-```
-
 ## Project Structure
 ```
 textsumm/
+├── .github/
+│   ├── workflows/
+│   │   └── ci.yml                 # GitHub Actions CI pipeline
+│   └── pull_request_template.md   # PR checklist template
 ├── src/
 │   └── textsumm/
 │       ├── __init__.py
-│       └── main.py        # CLI entry point, core logic, custom exceptions
+│       └── main.py                # CLI, core logic, custom exceptions
 ├── tests/
 │   ├── __init__.py
-│   └── test_main.py       # pytest test suite (97% coverage)
-├── pyproject.toml         # project config and dependencies
-├── poetry.lock            # locked dependency versions
+│   └── test_main.py               # pytest suite (97% coverage)
+├── .pre-commit-config.yaml        # pre-commit hooks
+├── Makefile                       # dev shortcuts
+├── pyproject.toml                 # project config and dependencies
+├── poetry.lock                    # locked dependency versions
 └── README.md
 ```
 
